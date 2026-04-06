@@ -52,5 +52,5 @@ void simpanKeFile(TextEditor *ed) {
     }
 
     fclose(file);
-    printf("File berhasil disimpan dengan nama: %s\n", ed->nama_file);
+    printf("File Berhasil disimpan dengan nama: %s\n", ed->nama_file);
 }
