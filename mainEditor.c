@@ -10,7 +10,7 @@ int main() {
 
     setWarna(11);
     printf("==========================================\n");
-    printf("  SELAMAT DATANG DI APLIKASI TEXT EDITOR  \n");
+    printf("              SELAMAT MENGETIK            \n");
     printf("==========================================\n");
     setWarna(7);
     
