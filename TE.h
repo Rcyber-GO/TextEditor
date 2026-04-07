@@ -3,6 +3,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <windows.h>
 #define MAX_BARIS 100
 #define MAX_KOLOM 150
 
@@ -14,6 +15,8 @@ typedef struct {
 
 // Prototipe Fungsi
 void inisialisasiEditor(TextEditor *ed);
+void setWarna(int warna); // Fungsi baru untuk UI
+void bukaFile(TextEditor *ed); // Fungsi baru untuk membaca file eksisting
 void tampilkanEditor(TextEditor *ed);
 void tulisTeks(TextEditor *ed);
 void simpanKeFile(TextEditor *ed);
