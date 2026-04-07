@@ -4,93 +4,134 @@
 void setWarna(int warna) {
     SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), warna);
 }
-int i;
-void inisialisasiEditor(TextEditor *ed) {
-    ed->jumlah_baris = 0;
-    for (i = 0; i < MAX_BARIS; i++) {
-        ed->konten[i][0] = '\0';
-    }
+
+void gotoxy(int x, int y) {
+    COORD coord;
+    coord.X = x;
+    coord.Y = y;
+    SetConsoleCursorPosition(GetStdHandle(STD_OUTPUT_HANDLE), coord);
 }
 
-// Pengembangan: Membaca isi file jika file tersebut sudah ada
-void bukaFile(TextEditor *ed) {
-    FILE *file = fopen(ed->nama_file, "r");
-    if (file != NULL) {
-        // File sudah ada, baca isinya dan masukkan ke array 2 dimensi
-        while (fgets(ed->konten[ed->jumlah_baris], MAX_KOLOM, file) != NULL && ed->jumlah_baris < MAX_BARIS) {
-            // Hilangkan karakter newline di akhir setiap baris
-            ed->konten[ed->jumlah_baris][strcspn(ed->konten[ed->jumlah_baris], "\n")] = 0; 
-            ed->jumlah_baris++;
-        }
-        fclose(file);
-        setWarna(10); // Warna Hijau Terang
-        printf("File ditemukan! Memuat isi file ke dalam editor...\n");
-        setWarna(7);  // Kembali ke warna default
-    } else {
-        setWarna(14); // Warna Kuning
-        printf("File belum ada. File baru akan dibuat saat Anda menyimpan.\n");
-        setWarna(7);
-    }
-    Sleep(1500); // Efek jeda (dari windows.h) sebelum masuk ke editor
+int i;
+
+void inisialisasiEditor(TextEditor *ed) {
+    memset(ed->konten, 0, sizeof(ed->konten));
+    ed->baris_sekarang = 0;
+    ed->kolom_sekarang = 0;
+    ed->jumlah_baris = 1; 
 }
 
 void tampilkanEditor(TextEditor *ed) {
-    system("cls");
-    setWarna(11); // Warna Cyan
-    printf("==================================================\n");
-    printf("                   TEXT EDITOR                    \n");
-    printf("==================================================\n");
+    gotoxy(0, 0);
+    setWarna(11); 
+    printf("=======================  TEKS EDITOR ======================\n");
+    setWarna(14); 
+    printf("     Tekan [CTRL+S] Simpan | [ESC] Keluar Tanpa Simpan     \n");
+    setWarna(7);
+    printf("===========================================================\n");
     
-    setWarna(14); // Warna Kuning
-    printf("File Saat Ini: %s\n", ed->nama_file);
-    printf("Ketik 'SAVE' pada baris baru untuk keluar dan simpan.\n");
-    printf("--------------------------------------------------\n");
-    setWarna(7); // Warna putih/abu-abu standar
     
-    // Tampilkan isi teks yang sudah ada (jika tadi memuat file)
     for (i = 0; i < ed->jumlah_baris; i++) {
-        printf("%2d | %s\n", i + 1, ed->konten[i]);
+        setWarna(11);
+        setWarna(7);
+        printf("%-70s\n", ed->konten[i]); 
     }
+    printf("%-120s\n", ""); 
 }
 
 void tulisTeks(TextEditor *ed) {
-    char buffer[MAX_KOLOM];
-    
-    while (ed->jumlah_baris < MAX_BARIS) {
-        setWarna(11); // Cyan untuk nomor baris
-        printf("%2d | ", ed->jumlah_baris + 1); 
-        setWarna(7);  // Putih untuk ketikan pengguna
+    while (1) {
+        tampilkanEditor(ed);
         
-        fgets(buffer, MAX_KOLOM, stdin);
-        
-        // Hilangkan newline dari fgets
-        buffer[strcspn(buffer, "\n")] = 0;
+        // Atur posisi kursor ke area teks (Header makan 3 baris, jadi +3)
+        gotoxy(ed->kolom_sekarang, ed->baris_sekarang + 3); 
 
-        // Cek keyword untuk berhenti
-        if (strcmp(buffer, "SAVE") == 0) {
-            break;
+        int ch = _getch(); 
+
+        // DETEKSI TOMBOL ARROW (224)
+        if (ch == 224) { 
+            ch = _getch(); 
+            if (ch == 72 && ed->baris_sekarang > 0) ed->baris_sekarang--;           // Up
+            else if (ch == 80 && ed->baris_sekarang < ed->jumlah_baris - 1) ed->baris_sekarang++; // Down
+            else if (ch == 75 && ed->kolom_sekarang > 0) ed->kolom_sekarang--;      // Left
+            else if (ch == 77 && ed->kolom_sekarang < (int)strlen(ed->konten[ed->baris_sekarang])) ed->kolom_sekarang++; // Right
+        } 
+        // BACA ESC (27) - KELUAR
+        else if (ch == 27) { 
+            system("cls");
+            break; 
+        } 
+        // BACA CTRL+S (19) - SIMPAN
+        else if (ch == 19) { 
+            system("cls");
+            simpanKeFile(ed); 
+            break; 
+        } 
+        // ENTER (13)
+        else if (ch == 13) { 
+            if (ed->jumlah_baris < MAX_BARIS) {
+                for (i = ed->jumlah_baris; i > ed->baris_sekarang + 1; i--) {
+                    strcpy(ed->konten[i], ed->konten[i-1]);
+                }
+                ed->jumlah_baris++;
+                
+                // Pindahkan sisa teks di kanan kursor ke baris baru
+                strcpy(ed->konten[ed->baris_sekarang + 1], &ed->konten[ed->baris_sekarang][ed->kolom_sekarang]);
+                memset(&ed->konten[ed->baris_sekarang][ed->kolom_sekarang], 0, MAX_KOLOM - ed->kolom_sekarang);
+                
+                ed->baris_sekarang++;
+                ed->kolom_sekarang = 0;
+            }
+        } 
+        // BACKSPACE (8)
+        else if (ch == 8) { 
+            if (ed->kolom_sekarang > 0) {
+                int len = strlen(ed->konten[ed->baris_sekarang]);
+                for (i = ed->kolom_sekarang - 1; i < len; i++) {
+                    ed->konten[ed->baris_sekarang][i] = ed->konten[ed->baris_sekarang][i+1];
+                }
+                ed->kolom_sekarang--;
+            }
+        }   
+        // KARAKTER BIASA (Spasi sampai ~)
+        else if (ch >= 32 && ch <= 126) { 
+            // LOGIKA AUTO-WRAP (Pindah baris otomatis jika kolom penuh)
+            if (ed->kolom_sekarang >= MAX_KOLOM - 2) { 
+                if (ed->jumlah_baris < MAX_BARIS) {
+                    for (i = ed->jumlah_baris; i > ed->baris_sekarang + 1; i--) {
+                        strcpy(ed->konten[i], ed->konten[i-1]);
+                    }
+                    ed->jumlah_baris++;
+                    ed->baris_sekarang++;    
+                    ed->kolom_sekarang = 0;   
+                    memset(ed->konten[ed->baris_sekarang], 0, MAX_KOLOM);
+                } else {
+                    continue; 
+                }
+            }
+
+            // Insert karakter ke posisi kursor
+            int len = strlen(ed->konten[ed->baris_sekarang]);
+            for (i = len; i >= ed->kolom_sekarang; i--) {
+                ed->konten[ed->baris_sekarang][i+1] = ed->konten[ed->baris_sekarang][i];
+            }
+            ed->konten[ed->baris_sekarang][ed->kolom_sekarang] = (char)ch; 
+            ed->kolom_sekarang++;
         }
-
-        // Masukkan ke array 2 dimensi
-        strcpy(ed->konten[ed->jumlah_baris], buffer);
-        ed->jumlah_baris++;
-    }
-    
-    // Validasi jika kapasitas array penuh
-    if (ed->jumlah_baris >= MAX_BARIS) {
-        setWarna(12); // Merah
-        printf("\n[!] Batas maksimal baris (%d) telah tercapai.\n", MAX_BARIS);
-        setWarna(7);
-        system("pause");
     }
 }
 
+
 void simpanKeFile(TextEditor *ed) {
-	
+    setWarna(14); // Kuning
+    printf("Masukkan nama file (contoh: catatan.txt): ");
+    setWarna(7);
+    scanf("%s", ed->nama_file);
+
     FILE *file = fopen(ed->nama_file, "w");
     if (file == NULL) {
         setWarna(12); // Merah
-        printf("\nGagal menyimpan file ke local disk!\n");
+        printf("\n[ERROR] Gagal membuat file!\n");
         setWarna(7);
         return;
     }
@@ -101,6 +142,7 @@ void simpanKeFile(TextEditor *ed) {
 
     fclose(file);
     setWarna(10); // Hijau
-    printf("\n[SUCCESS] File berhasil disimpan pada local host dengan nama: %s\n", ed->nama_file);
+    printf("\n[SUCCESS] File berhasil disimpan: %s\n", ed->nama_file);
     setWarna(7);
+    Sleep(2000);
 }

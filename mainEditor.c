@@ -14,17 +14,9 @@ int main() {
     printf("==========================================\n");
     setWarna(7);
     
-    printf("Masukkan nama file format .txt: ");
-    scanf("%s", myEditor.nama_file);
-    getchar(); // Membersihkan buffer newline agar fgets selanjutnya tidak terlewat
-
-    // Memanggil fungsi baru untuk memeriksa/memuat file eksisting
-    bukaFile(&myEditor);
-
-    // Proses inti
     tampilkanEditor(&myEditor);
+	system("cls"); 
     tulisTeks(&myEditor);
-    simpanKeFile(&myEditor);
 
     setWarna(11);
     printf("\nTerima kasih telah menggunakan editor ini!\n");
