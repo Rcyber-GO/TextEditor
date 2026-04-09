@@ -7,6 +7,8 @@
 #include <windows.h>
 #define MAX_BARIS 1000
 #define MAX_KOLOM 120
+#define MAX_HISTORY 100
+
 
 typedef struct {
     char konten[MAX_BARIS][MAX_KOLOM];
@@ -24,5 +26,9 @@ void tampilkanEditor(TextEditor *ed);
 void tulisTeks(TextEditor *ed);
 void simpanKeFile(TextEditor *ed);
 void bukaFile(TextEditor *ed);
+void simpanState(TextEditor *ed);
+void undo(TextEditor *ed);
+void redo(TextEditor *ed);
+void resetHistory();
 
 #endif
