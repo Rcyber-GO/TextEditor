@@ -64,7 +64,7 @@ void tampilkanEditor(TextEditor *ed) {
     setWarna(11); 
     printf("=======================================================  TEKS EDITOR ==================================================\n");
     setWarna(14); 
-    printf(" [CTRL+S] Simpan | [CTRL+O] Buka | [CTRL+A] Block | [CTRL+Z] Undo | [CTRL+Y] Redo | [ESC] Keluar \n");
+    printf("   [CTRL+S] Simpan | [CTRL+O] Buka | [CTRL+A] Block | [CTRL+Z] Undo | [CTRL+Y] Redo | [ESC] Keluar | [CTRL+X] Delete \n");
     setWarna(11);
     printf("=======================================================================================================================\n");
     
@@ -194,7 +194,7 @@ void tulisTeks(TextEditor *ed) {
                 continue; 
             }
 
-            // Insert karakter ke posisi kursor
+        
             for (i = len; i >= ed->kolom_sekarang; i--) {
                 ed->konten[ed->baris_sekarang][i+1] = ed->konten[ed->baris_sekarang][i];
             }
@@ -204,6 +204,51 @@ void tulisTeks(TextEditor *ed) {
             if (!_kbhit()) {
                 simpanState(ed);
             }
+        }
+        // BACA CTRL+X (24) - HAPUS 1 KATA KE KIRI
+        else if (ch == 24) {
+            int changed = 0;
+            
+            if (ed->kolom_sekarang > 0) {
+                int hapus_sampai = ed->kolom_sekarang - 1;
+                
+                while (hapus_sampai >= 0 && ed->konten[ed->baris_sekarang][hapus_sampai] == ' ') {
+                    hapus_sampai--;
+                }
+                
+                while (hapus_sampai >= 0 && ed->konten[ed->baris_sekarang][hapus_sampai] != ' ') {
+                    hapus_sampai--;
+                }
+                
+                int posisi_baru = hapus_sampai + 1;
+                int jumlah_dihapus = ed->kolom_sekarang - posisi_baru;
+                int len = strlen(ed->konten[ed->baris_sekarang]);
+                
+                for (i = posisi_baru; i <= len - jumlah_dihapus; i++) {
+                    ed->konten[ed->baris_sekarang][i] = ed->konten[ed->baris_sekarang][i + jumlah_dihapus];
+                }
+                
+                ed->kolom_sekarang = posisi_baru;
+                changed = 1;
+            } 
+            else if (ed->baris_sekarang > 0) {
+                int panjang_baris_atas = strlen(ed->konten[ed->baris_sekarang - 1]);
+                int panjang_baris_ini = strlen(ed->konten[ed->baris_sekarang]);
+
+                if (panjang_baris_atas + panjang_baris_ini < MAX_KOLOM) {
+                    strcat(ed->konten[ed->baris_sekarang - 1], ed->konten[ed->baris_sekarang]);
+                    for (i = ed->baris_sekarang; i < ed->jumlah_baris - 1; i++) {
+                        strcpy(ed->konten[i], ed->konten[i+1]);
+                    }
+                    memset(ed->konten[ed->jumlah_baris - 1], 0, MAX_KOLOM);
+                    ed->jumlah_baris--;
+                    ed->baris_sekarang--;
+                    ed->kolom_sekarang = panjang_baris_atas;
+                    changed = 1;
+                }
+            }
+
+            if (changed && !_kbhit()) simpanState(ed);
         }
     }
 }
