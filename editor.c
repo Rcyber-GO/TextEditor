@@ -25,14 +25,16 @@ void tulisTeks(TextEditor *ed) {
     int layar_kolom, layar_baris;
 
     while (1) {
+        // Update ukuran layar setiap kali loop berjalan (beradaptasi jika user me-resize jendela)
         dapatkanUkuranLayar(&layar_kolom, &layar_baris);
         
         tampilkanEditor(ed);
- 
+        
+        // Asumsi baris + 3 adalah offset untuk header UI Anda
         gotoxy(ed->kolom_sekarang, ed->baris_sekarang + 3); 
 
-		int ch = _getch();
-		
+        int ch = _getch(); 
+
         if (ch == 224) { 
             ch = _getch(); 
             
@@ -86,7 +88,10 @@ void tulisTeks(TextEditor *ed) {
         }
         // ENTER (13)
         else if (ch == 13) { 
+<<<<<<< HEAD
 
+=======
+>>>>>>> 3dba73d5ce94ea046d9aa6b1f93c71fc619b8155
             // Cek batas memori MAX_BARIS
             if (ed->jumlah_baris < MAX_BARIS) {
                 for (i = ed->jumlah_baris; i > ed->baris_sekarang + 1; i--) {
@@ -136,7 +141,7 @@ void tulisTeks(TextEditor *ed) {
         else if (ch >= 32 && ch <= 126) { 
             int len = strlen(ed->konten[ed->baris_sekarang]);
 
-            // AUTO-WRAP (Mirip ENTER)
+            // AUTO-WRAP
             if (ed->kolom_sekarang >= MAX_KOLOM - 2) { 
                 if (ed->jumlah_baris < MAX_BARIS) {
                     for (i = ed->jumlah_baris; i > ed->baris_sekarang + 1; i--) {
@@ -158,13 +163,17 @@ void tulisTeks(TextEditor *ed) {
                 char char_overflow;
                 int j;
                 
+<<<<<<< HEAD
                 // Geser karakter paling ujung ke baris berikutnya
+=======
+>>>>>>> 3dba73d5ce94ea046d9aa6b1f93c71fc619b8155
                 while (b < MAX_BARIS - 1 && strlen(ed->konten[b]) >= MAX_KOLOM - 2) {
                     int len_b = strlen(ed->konten[b]);
                     char_overflow = ed->konten[b][len_b - 1];
-                    ed->konten[b][len_b - 1] = '\0';          
+                    ed->konten[b][len_b - 1] = '\0';
                     
                     b++;
+<<<<<<< HEAD
                     
                     // Buat baris baru jika kita sudah berada di baris paling bawah
                     int len_b = strlen(ed->konten[b]);
@@ -174,16 +183,23 @@ void tulisTeks(TextEditor *ed) {
                     b++;
                     
                     // Buat baris baru
+=======
+>>>>>>> 3dba73d5ce94ea046d9aa6b1f93c71fc619b8155
 
                     if (b == ed->jumlah_baris) {
                         ed->jumlah_baris++;
                         memset(ed->konten[b], 0, MAX_KOLOM);
                     }
+<<<<<<< HEAD
                     // Geser isi baris di bawahnya ke kanan 1 langkah
+=======
+
+>>>>>>> 3dba73d5ce94ea046d9aa6b1f93c71fc619b8155
                     int len_next = strlen(ed->konten[b]);
                     for (j = len_next; j >= 0; j--) {
                         ed->konten[b][j + 1] = ed->konten[b][j];
                     }
+<<<<<<< HEAD
                     // Taruh karakter yang terdorong tadi di awal baris ini
                     ed->konten[b][0] = char_overflow;
                 }
@@ -191,6 +207,11 @@ void tulisTeks(TextEditor *ed) {
                 // Update len karena kita sudah membuang 1 karakter di ujung
                     ed->konten[b][0] = char_overflow;
                 }
+=======
+                    ed->konten[b][0] = char_overflow;
+                }
+
+>>>>>>> 3dba73d5ce94ea046d9aa6b1f93c71fc619b8155
                 len = strlen(ed->konten[ed->baris_sekarang]);
             }
 
