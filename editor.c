@@ -1,4 +1,3 @@
-<<<<<<<< HEAD:editor.c
 #include "editor.h"
 #include "ui.h"
 #include "history.h"
@@ -26,22 +25,39 @@ void tulisTeks(TextEditor *ed) {
     int layar_kolom, layar_baris;
 
     while (1) {
-        // Update ukuran layar setiap kali loop berjalan (beradaptasi jika user me-resize jendela)
         dapatkanUkuranLayar(&layar_kolom, &layar_baris);
         
         tampilkanEditor(ed);
-        
-        // Asumsi baris + 3 adalah offset untuk header UI Anda
+ 
         gotoxy(ed->kolom_sekarang, ed->baris_sekarang + 3); 
 
         int ch = _getch(); 
 
         if (ch == 224) { 
             ch = _getch(); 
-            if (ch == 72 && ed->baris_sekarang > 0) ed->baris_sekarang--;            // Up
-            else if (ch == 80 && ed->baris_sekarang < ed->jumlah_baris - 1) ed->baris_sekarang++; // Down
-            else if (ch == 75 && ed->kolom_sekarang > 0) ed->kolom_sekarang--;       // Left
-            else if (ch == 77 && ed->kolom_sekarang < (int)strlen(ed->konten[ed->baris_sekarang])) ed->kolom_sekarang++; // Right
+            
+            // TOMBOL PANAH ATAS (UP)
+            if (ch == 72 && ed->baris_sekarang > 0) {
+                ed->baris_sekarang--;
+                if (ed->kolom_sekarang > (int)strlen(ed->konten[ed->baris_sekarang])) {
+                    ed->kolom_sekarang = strlen(ed->konten[ed->baris_sekarang]);
+                }
+            }
+            // TOMBOL PANAH BAWAH (DOWN)
+            else if (ch == 80 && ed->baris_sekarang < ed->jumlah_baris - 1) {
+                ed->baris_sekarang++;
+                if (ed->kolom_sekarang > (int)strlen(ed->konten[ed->baris_sekarang])) {
+                    ed->kolom_sekarang = strlen(ed->konten[ed->baris_sekarang]);
+                }
+            }
+            // TOMBOL PANAH KIRI (LEFT)
+            else if (ch == 75 && ed->kolom_sekarang > 0) {
+                ed->kolom_sekarang--;
+            }
+            // TOMBOL PANAH KANAN (RIGHT)
+            else if (ch == 77 && ed->kolom_sekarang < (int)strlen(ed->konten[ed->baris_sekarang])) {
+                ed->kolom_sekarang++;
+            }
         } 
         // BACA CTRL+Z (26) - UNDO
         else if (ch == 26) {
@@ -70,7 +86,7 @@ void tulisTeks(TextEditor *ed) {
         }
         // ENTER (13)
         else if (ch == 13) { 
-            // Cek batas memori MAX_BARIS, bukan batas layar untuk menyimpan data
+            // Cek batas memori MAX_BARIS
             if (ed->jumlah_baris < MAX_BARIS) {
                 for (i = ed->jumlah_baris; i > ed->baris_sekarang + 1; i--) {
                     strcpy(ed->konten[i], ed->konten[i-1]);
@@ -135,10 +151,36 @@ void tulisTeks(TextEditor *ed) {
                 }
             }
 
+            // RIPPLE EFFECT
             if (len >= MAX_KOLOM - 2) {
-                continue; 
+                int b = ed->baris_sekarang;
+                char char_overflow;
+                int j;
+                
+                // Geser karakter paling ujung ke baris berikutnya
+                    int len_b = strlen(ed->konten[b]);
+                    char_overflow = ed->konten[b][len_b - 1];
+                    ed->konten[b][len_b - 1] = '\0';  
+                    
+                    b++;
+                    
+                    // Buat baris baru
+                    if (b == ed->jumlah_baris) {
+                        ed->jumlah_baris++;
+                        memset(ed->konten[b], 0, MAX_KOLOM);
+                    }
+                    
+                    int len_next = strlen(ed->konten[b]);
+                    for (j = len_next; j >= 0; j--) {
+                        ed->konten[b][j + 1] = ed->konten[b][j];
+                    }
+                    ed->konten[b][0] = char_overflow;
+                }
+                
+                len = strlen(ed->konten[ed->baris_sekarang]);
             }
 
+            // INSERT KARAKTER
             for (i = len; i >= ed->kolom_sekarang; i--) {
                 ed->konten[ed->baris_sekarang][i+1] = ed->konten[ed->baris_sekarang][i];
             }
@@ -196,5 +238,3 @@ void tulisTeks(TextEditor *ed) {
         }
     }
 }
-========
->>>>>>>> 58ddb5b4c57a233df185ac3d490544dd8f5f5512:TE.c

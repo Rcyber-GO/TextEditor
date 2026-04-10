@@ -9,7 +9,7 @@
 #define MAX_BARIS 1000
 #define MAX_KOLOM 120
 
-// Definisi Struktur TextEditor
+// Struktur TextEditor
 typedef struct {
     char konten[MAX_BARIS][MAX_KOLOM];
     int baris_sekarang;
@@ -18,4 +18,4 @@ typedef struct {
     char nama_file[100];
 } TextEditor;
 
-#endif // TE_H
+#endif
