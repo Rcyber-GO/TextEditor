@@ -11,10 +11,6 @@ int main() {
     // Inisialisasi state awal editor
     inisialisasiEditor(&myEditor);
     
-    // Tampilkan UI awal (opsional jika system("cls") langsung dipanggil setelahnya, 
-    // tapi dibiarkan sesuai struktur asli Anda)
-    tampilkanEditor(&myEditor);
-    system("cls"); 
     
     // Masuk ke loop utama editor
     tulisTeks(&myEditor);
@@ -22,7 +18,7 @@ int main() {
     // Pesan keluar setelah menekan ESC
     setWarna(11);
     printf("\nTerima kasih telah menggunakan editor ini\n");
-    setWarna(7); // Kembalikan ke warna default
+    setWarna(7);
     
     system("pause");
     return 0;

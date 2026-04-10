@@ -28,8 +28,7 @@ void tulisTeks(TextEditor *ed) {
         dapatkanUkuranLayar(&layar_kolom, &layar_baris);
         
         tampilkanEditor(ed);
-        
-        // Asumsi baris + 3 adalah offset untuk header UI Anda
+ 
         gotoxy(ed->kolom_sekarang, ed->baris_sekarang + 3); 
 
 		int ch = _getch();
@@ -47,7 +46,10 @@ void tulisTeks(TextEditor *ed) {
             // TOMBOL PANAH BAWAH (DOWN)
             else if (ch == 80 && ed->baris_sekarang < ed->jumlah_baris - 1) {
                 ed->baris_sekarang++;
+<<<<<<< HEAD
                 // Jika kursor melebihi panjang teks di baris bawah, tarik ke ujung teksnya
+=======
+>>>>>>> PunyaIki
                 if (ed->kolom_sekarang > (int)strlen(ed->konten[ed->baris_sekarang])) {
                     ed->kolom_sekarang = strlen(ed->konten[ed->baris_sekarang]);
                 }
@@ -88,6 +90,10 @@ void tulisTeks(TextEditor *ed) {
         }
         // ENTER (13)
         else if (ch == 13) { 
+<<<<<<< HEAD
+=======
+            // Cek batas memori MAX_BARIS
+>>>>>>> PunyaIki
             if (ed->jumlah_baris < MAX_BARIS) {
                 for (i = ed->jumlah_baris; i > ed->baris_sekarang + 1; i--) {
                     strcpy(ed->konten[i], ed->konten[i-1]);
@@ -159,6 +165,7 @@ void tulisTeks(TextEditor *ed) {
                 int j;
                 
                 // Geser karakter paling ujung ke baris berikutnya
+<<<<<<< HEAD
                 while (b < MAX_BARIS - 1 && strlen(ed->konten[b]) >= MAX_KOLOM - 2) {
                     int len_b = strlen(ed->konten[b]);
                     char_overflow = ed->konten[b][len_b - 1];
@@ -167,21 +174,39 @@ void tulisTeks(TextEditor *ed) {
                     b++;
                     
                     // Buat baris baru jika kita sudah berada di baris paling bawah
+=======
+                    int len_b = strlen(ed->konten[b]);
+                    char_overflow = ed->konten[b][len_b - 1];
+                    ed->konten[b][len_b - 1] = '\0';  
+                    
+                    b++;
+                    
+                    // Buat baris baru
+>>>>>>> PunyaIki
                     if (b == ed->jumlah_baris) {
                         ed->jumlah_baris++;
                         memset(ed->konten[b], 0, MAX_KOLOM);
                     }
                     
+<<<<<<< HEAD
                     // Geser isi baris di bawahnya ke kanan 1 langkah
+=======
+>>>>>>> PunyaIki
                     int len_next = strlen(ed->konten[b]);
                     for (j = len_next; j >= 0; j--) {
                         ed->konten[b][j + 1] = ed->konten[b][j];
                     }
+<<<<<<< HEAD
                     // Taruh karakter yang terdorong tadi di awal baris ini
                     ed->konten[b][0] = char_overflow;
                 }
                 
                 // Update len karena kita sudah membuang 1 karakter di ujung
+=======
+                    ed->konten[b][0] = char_overflow;
+                }
+                
+>>>>>>> PunyaIki
                 len = strlen(ed->konten[ed->baris_sekarang]);
             }
 
