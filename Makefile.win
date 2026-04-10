@@ -4,8 +4,8 @@
 CPP      = g++.exe
 CC       = gcc.exe
 WINDRES  = windres.exe
-OBJ      = mainEditor.o TE.o
-LINKOBJ  = mainEditor.o TE.o
+OBJ      = mainEditor.o file_io.o history.o ui.o editor.o
+LINKOBJ  = mainEditor.o file_io.o history.o ui.o editor.o
 LIBS     = -L"C:/Program Files (x86)/Dev-Cpp/MinGW64/x86_64-w64-mingw32/lib32" -static-libgcc -m32
 INCS     = -I"C:/Program Files (x86)/Dev-Cpp/MinGW64/include" -I"C:/Program Files (x86)/Dev-Cpp/MinGW64/x86_64-w64-mingw32/include" -I"C:/Program Files (x86)/Dev-Cpp/MinGW64/lib/gcc/x86_64-w64-mingw32/4.9.2/include"
 CXXINCS  = -I"C:/Program Files (x86)/Dev-Cpp/MinGW64/include" -I"C:/Program Files (x86)/Dev-Cpp/MinGW64/x86_64-w64-mingw32/include" -I"C:/Program Files (x86)/Dev-Cpp/MinGW64/lib/gcc/x86_64-w64-mingw32/4.9.2/include" -I"C:/Program Files (x86)/Dev-Cpp/MinGW64/lib/gcc/x86_64-w64-mingw32/4.9.2/include/c++"
@@ -27,5 +27,14 @@ $(BIN): $(OBJ)
 mainEditor.o: mainEditor.c
 	$(CC) -c mainEditor.c -o mainEditor.o $(CFLAGS)
 
-TE.o: TE.c
-	$(CC) -c TE.c -o TE.o $(CFLAGS)
+file_io.o: file_io.c
+	$(CC) -c file_io.c -o file_io.o $(CFLAGS)
+
+history.o: history.c
+	$(CC) -c history.c -o history.o $(CFLAGS)
+
+ui.o: ui.c
+	$(CC) -c ui.c -o ui.o $(CFLAGS)
+
+editor.o: editor.c
+	$(CC) -c editor.c -o editor.o $(CFLAGS)
