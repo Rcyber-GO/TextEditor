@@ -1,92 +1,39 @@
-#include "TE.h"
+#include "editor.h"
+#include "ui.h"
+#include "history.h"
+#include "file_io.h"
 
-TextEditor historyStack[MAX_HISTORY];
-int current_history_idx = -1;
-int max_history_idx = -1;
-
-void resetHistory() {
-    current_history_idx = -1;
-    max_history_idx = -1;
+void dapatkanUkuranLayar(int *kolom, int *baris) {
+    CONSOLE_SCREEN_BUFFER_INFO csbi;
+    GetConsoleScreenBufferInfo(GetStdHandle(STD_OUTPUT_HANDLE), &csbi);
+    *kolom = csbi.srWindow.Right - csbi.srWindow.Left + 1;
+    *baris = csbi.srWindow.Bottom - csbi.srWindow.Top + 1;
 }
-
-void simpanState(TextEditor *ed) {
-    if (current_history_idx < MAX_HISTORY - 1) {
-        current_history_idx++;
-    } else {
-        for (int i = 0; i < MAX_HISTORY - 1; i++) {
-            historyStack[i] = historyStack[i + 1];
-        }
-    }
-    historyStack[current_history_idx] = *ed; 
-    max_history_idx = current_history_idx;  
-}
-
-void undo(TextEditor *ed) {
-    if (current_history_idx > 0) {
-        current_history_idx--;
-        *ed = historyStack[current_history_idx];
-    }
-}
-
-void redo(TextEditor *ed) {
-    if (current_history_idx < max_history_idx) {
-        current_history_idx++;
-        *ed = historyStack[current_history_idx];
-    }
-}
-
-void setWarna(int warna) {
-    SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), warna);
-}
-
-void gotoxy(int x, int y) {
-    COORD coord;
-    coord.X = x;
-    coord.Y = y;
-    SetConsoleCursorPosition(GetStdHandle(STD_OUTPUT_HANDLE), coord);
-}
-
-int i;
 
 void inisialisasiEditor(TextEditor *ed) {
     memset(ed->konten, 0, sizeof(ed->konten));
     ed->baris_sekarang = 0;
     ed->kolom_sekarang = 0;
     ed->jumlah_baris = 1; 
-    ed->is_blocked = 0;
     
     resetHistory();
     simpanState(ed);
 }
 
-void tampilkanEditor(TextEditor *ed) {
-    gotoxy(0, 0);
-    setWarna(11); 
-    printf("=======================================================  TEKS EDITOR ==================================================\n");
-    setWarna(14); 
-    printf("   [CTRL+S] Simpan | [CTRL+O] Buka | [CTRL+A] Block | [CTRL+Z] Undo | [CTRL+Y] Redo | [ESC] Keluar | [CTRL+X] Delete \n");
-    setWarna(11);
-    printf("=======================================================================================================================\n");
-    
-    for (i = 0; i < ed->jumlah_baris; i++) {
-        setWarna(7);
-        printf("%-120s\n", ed->konten[i]); 
-    }
-    printf("%-120s\n", ""); 
-}
-
 void tulisTeks(TextEditor *ed) {
+	int i;
+    int layar_kolom, layar_baris;
+
     while (1) {
+        // Update ukuran layar setiap kali loop berjalan (beradaptasi jika user me-resize jendela)
+        dapatkanUkuranLayar(&layar_kolom, &layar_baris);
+        
         tampilkanEditor(ed);
         
+        // Asumsi baris + 3 adalah offset untuk header UI Anda
         gotoxy(ed->kolom_sekarang, ed->baris_sekarang + 3); 
 
         int ch = _getch(); 
-
-        if (ch != 1 && ed->is_blocked) {
-            ed->is_blocked = 0;
-            tampilkanEditor(ed);
-        }
 
         if (ch == 224) { 
             ch = _getch(); 
@@ -95,10 +42,6 @@ void tulisTeks(TextEditor *ed) {
             else if (ch == 75 && ed->kolom_sekarang > 0) ed->kolom_sekarang--;       // Left
             else if (ch == 77 && ed->kolom_sekarang < (int)strlen(ed->konten[ed->baris_sekarang])) ed->kolom_sekarang++; // Right
         } 
-        // BACA CTRL+A (1) - BLOCK ALL
-        else if (ch == 1) {
-            ed->is_blocked = 1;
-        }
         // BACA CTRL+Z (26) - UNDO
         else if (ch == 26) {
             undo(ed);
@@ -124,8 +67,9 @@ void tulisTeks(TextEditor *ed) {
             bukaFile(ed);
             system("cls");
         }
-        
+        // ENTER (13)
         else if (ch == 13) { 
+            // Cek batas memori MAX_BARIS, bukan batas layar untuk menyimpan data
             if (ed->jumlah_baris < MAX_BARIS) {
                 for (i = ed->jumlah_baris; i > ed->baris_sekarang + 1; i--) {
                     strcpy(ed->konten[i], ed->konten[i-1]);
@@ -194,7 +138,6 @@ void tulisTeks(TextEditor *ed) {
                 continue; 
             }
 
-        
             for (i = len; i >= ed->kolom_sekarang; i--) {
                 ed->konten[ed->baris_sekarang][i+1] = ed->konten[ed->baris_sekarang][i];
             }
@@ -205,7 +148,7 @@ void tulisTeks(TextEditor *ed) {
                 simpanState(ed);
             }
         }
-        // BACA CTRL+X (24) - HAPUS 1 KATA KE KIRI
+        // BACA CTRL+X (24)
         else if (ch == 24) {
             int changed = 0;
             
@@ -251,73 +194,4 @@ void tulisTeks(TextEditor *ed) {
             if (changed && !_kbhit()) simpanState(ed);
         }
     }
-}
-
-// Implementasi Fungsi Open File
-void bukaFile(TextEditor *ed) {
-    setWarna(14); 
-    printf("Masukkan nama file yang ingin dibuka (.txt): ");
-    setWarna(7);
-    scanf("%s", ed->nama_file);
-
-    FILE *file = fopen(ed->nama_file, "r");
-    if (file == NULL) {
-        setWarna(12); 
-        printf("\n[ERROR] File tidak ditemukan atau gagal dibuka!\n");
-        setWarna(7);
-        Sleep(2000);
-        return;
-    }
-
-    inisialisasiEditor(ed); 
-
-    // Membaca file baris demi baris
-    ed->jumlah_baris = 0;
-    while (fgets(ed->konten[ed->jumlah_baris], MAX_KOLOM, file)) {
-        ed->konten[ed->jumlah_baris][strcspn(ed->konten[ed->jumlah_baris], "\n")] = 0;
-        ed->jumlah_baris++;
-        if (ed->jumlah_baris >= MAX_BARIS) break;
-    }
-
-    if (ed->jumlah_baris == 0) ed->jumlah_baris = 1; 
-
-    ed->baris_sekarang = ed->jumlah_baris - 1;
-    ed->kolom_sekarang = strlen(ed->konten[ed->baris_sekarang]);
-
-    fclose(file);
-    
-    // Simpan history setelah memuat file
-    resetHistory();
-    simpanState(ed);
-
-    setWarna(10); 
-    printf("\n[SUCCESS] File berhasil dimuat: %s\n", ed->nama_file);
-    setWarna(7);
-    Sleep(2000);
-}
-
-void simpanKeFile(TextEditor *ed) {
-    setWarna(14);
-    printf("Masukkan nama file dengan format .txt: ");
-    setWarna(7);
-    scanf("%s", ed->nama_file);
-
-    FILE *file = fopen(ed->nama_file, "w");
-    if (file == NULL) {
-        setWarna(12);
-        printf("\n[ERROR] Gagal membuat file!\n");
-        setWarna(7);
-        Sleep(2000);
-        return;
-    }
-
-    for (i = 0; i < ed->jumlah_baris; i++) {
-        fprintf(file, "%s\n", ed->konten[i]);
-    }
-
-    fclose(file);
-    setWarna(10); 
-    printf("\n[SUCCESS] File berhasil disimpan: %s\n", ed->nama_file);
-    setWarna(7);
-    Sleep(2000);
 }
