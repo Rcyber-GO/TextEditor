@@ -1,3 +1,4 @@
+<<<<<<<< HEAD:editor.c
 #include "editor.h"
 #include "ui.h"
 #include "history.h"
@@ -195,3 +196,5 @@ void tulisTeks(TextEditor *ed) {
         }
     }
 }
+========
+>>>>>>>> 58ddb5b4c57a233df185ac3d490544dd8f5f5512:TE.c

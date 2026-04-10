@@ -1,2 +1,15 @@
+<<<<<<< HEAD
 [Editors]
 Order=
+=======
+[Editor_1]
+CursorCol=1
+CursorRow=1
+TopLine=1
+LeftChar=1
+[Editor_10]
+CursorCol=1
+CursorRow=1
+TopLine=1
+LeftChar=1
+>>>>>>> 58ddb5b4c57a233df185ac3d490544dd8f5f5512
