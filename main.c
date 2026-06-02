@@ -1,6 +1,12 @@
 #include "ikiheader.h"
+#include "alpinheader.h"
 
 int main() {
+    TextEditor ed;
+    
+    inisialisasiEditor(&ed); // Menyiapkan lembar kosong
+    jalankanEditor(&ed);     // Masuk ke mesin utamanya
+    
     Node* headEditor = NULL; 
     tambahBaris(&headEditor, "Tess");
     tambahBaris(&headEditor, "Tess");

@@ -1,7 +1,7 @@
 #include "ikiheader.h"
 
-Node* buatNodeBaru(const char* isiTeks) {
-    Node* nodeBaru = (Node*)malloc(sizeof(Node));
+node* buatNodeBaru(const char* isiTeks) {
+    node* nodeBaru = (node*)malloc(sizeof(node));
     if (nodeBaru != NULL) {
         strcpy(nodeBaru->teks, isiTeks);
         nodeBaru->next = NULL;
@@ -9,22 +9,22 @@ Node* buatNodeBaru(const char* isiTeks) {
     return nodeBaru;
 }
 
-void tambahBaris(Node** head, const char* isiTeks) {
-    Node* nodeBaru = buatNodeBaru(isiTeks);
+void tambahBaris(node** head, const char* isiTeks) {
+    node* nodeBaru = buatNodeBaru(isiTeks);
     
     if (*head == NULL) {
         *head = nodeBaru;
         return;
     }
     
-    Node* temp = *head;
+    node* temp = *head;
     while (temp->next != NULL) {
         temp = temp->next;
     }
     temp->next = nodeBaru;
 }
 
-int simpanKeFile(Node* head, const char* namaFile) {
+int simpanKeFile(node* head, const char* namaFile) {
     FILE* file = fopen(namaFile, "w");
     
     if (file == NULL) {
@@ -32,7 +32,7 @@ int simpanKeFile(Node* head, const char* namaFile) {
         return 0;
     }
     
-    Node* current = head;
+    node* current = head;
     while (current != NULL) {
         fprintf(file, "%s\n", current->teks);
         current = current->next;
@@ -42,8 +42,8 @@ int simpanKeFile(Node* head, const char* namaFile) {
     return 1;
 }
 
-void hapusSemuaMemori(Node* head) {
-    Node* temp;
+void hapusSemuaMemori(node* head) {
+    node* temp;
     while (head != NULL) {
         temp = head;
         head = head->next;

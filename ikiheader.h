@@ -4,14 +4,14 @@
 #include <stdlib.h>
 #include <string.h>
 
-typedef struct Node {
+typedef struct node {
     char teks[256];
-    struct Node* next;
-} Node;
+    struct node* next;
+} node;
 
-Node* buatNodeBaru(const char* isiTeks);
-void tambahBaris(Node** head, const char* isiTeks);
-int simpanKeFile(Node* head, const char* namaFile);
-void hapusSemuaMemori(Node* head);
+node* buatNodeBaru(const char* isiTeks);
+void tambahBaris(node** head, const char* isiTeks);
+int simpanKeFile(node* head, const char* namaFile);
+void hapusSemuaMemori(node* head);
 
 #endif
