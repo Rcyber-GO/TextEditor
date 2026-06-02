@@ -24,4 +24,8 @@ typedef struct {
     char nama_file[100];
 } TextEditor;
 
+// Deklarasi fungsi ngetik
+void inisialisasiEditor(TextEditor *ed);
+void jalankanEditor(TextEditor *ed);
+
 #endif
