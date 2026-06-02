@@ -1,8 +1,21 @@
-#include <stdio.h>
-#include <stdlib.h>
+#include "ikiheader.h"
 
-/* run this program using the console pauser or add your own getch, system("pause") or input loop */
+int main() {
+    Node* headEditor = NULL; 
+    tambahBaris(&headEditor, "Tess");
+    tambahBaris(&headEditor, "Tess");
+    tambahBaris(&headEditor, "Tess");
 
-int main(int argc, char *argv[]) {
-	return 0;
+    printf("Sedang menjalankan fitur save file...\n");
+
+    if (simpanKeFile(headEditor, "output_editor.txt")) {
+        printf("Berhasil! Silahkan cek file 'output_editor.txt'.\n");
+    } else {
+        printf("Proses penyimpanan gagal.\n");
+    }
+
+    // Pembersihan memori
+    hapusSemuaMemori(headEditor);
+    
+    return 0;
 }
