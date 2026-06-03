@@ -1,3 +1,0 @@
-Halo, ini baris pertama text editor saya.
-Menggunakan Linked List di bahasa C ternyata seru.
-Baris ketiga ini dikompilasi dari multi-file!

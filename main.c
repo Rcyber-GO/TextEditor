@@ -1,27 +1,22 @@
-#include "ikiheader.h"
+#include <stdio.h>
+#include <stdlib.h>
 #include "alpinheader.h"
+#include "ikiheader.h"
 
 int main() {
-    TextEditor ed;
-    
-    inisialisasiEditor(&ed); // Menyiapkan lembar kosong
-    jalankanEditor(&ed);     // Masuk ke mesin utamanya
-    
-    Node* headEditor = NULL; 
-    tambahBaris(&headEditor, "Tess");
-    tambahBaris(&headEditor, "Tess");
-    tambahBaris(&headEditor, "Tess");
-
-    printf("Sedang menjalankan fitur save file...\n");
-
-    if (simpanKeFile(headEditor, "output_editor.txt")) {
-        printf("Berhasil! Silahkan cek file 'output_editor.txt'.\n");
+    TextEditor editor;
+    inisialisasiEditor(&editor);
+    jalankanEditor(&editor);
+    system("cls"); 
+    printf("=== KELUAR DARI EDITOR ===\n");
+    printf("Masukkan nama file untuk menyimpan (contoh: tugasku.txt): ");
+    scanf("%99s", editor.nama_file); 
+    int status = simpanFile(&editor, editor.nama_file);
+    if (status == 1) {
+        printf("\n[SUCCESS] File '%s' berhasil disimpan!\n", editor.nama_file);
     } else {
-        printf("Proses penyimpanan gagal.\n");
+        printf("\n[ERROR] Gagal menyimpan file!\n");
     }
-
-    // Pembersihan memori
-    hapusSemuaMemori(headEditor);
     
     return 0;
 }

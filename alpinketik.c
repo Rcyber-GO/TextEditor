@@ -1,5 +1,4 @@
 #include "alpinheader.h"
-
 #include <windows.h> 
 #include <conio.h>
 
@@ -39,7 +38,7 @@ void jalankanEditor(TextEditor *ed) {
 
         if (ch == 27) { // ESC
             break;
-        }
+		}
         else if (ch == 8) { // Backspace
             if (ed->kolom_sekarang > 0) {
                 ed->kolom_sekarang--; 
@@ -58,7 +57,6 @@ void jalankanEditor(TextEditor *ed) {
                 ed->kolom_sekarang++;
                 ed->baris_sekarang->jumlah_karakter++;
             }
-        }
-        
+        } 
     }
 }
