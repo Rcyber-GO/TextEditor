@@ -27,5 +27,6 @@ typedef struct {
 // Deklarasi fungsi ngetik
 void inisialisasiEditor(TextEditor *ed);
 void jalankanEditor(TextEditor *ed);
-
+// Logika untuk menambahkan baris baru 
+void tambahBarisBaru(TextEditor *ed);
 #endif
