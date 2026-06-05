@@ -1,22 +1,28 @@
-#include <stdio.h>
-#include <stdlib.h>
 #include "alpinheader.h"
 #include "ikiheader.h"
 
 int main() {
     TextEditor editor;
-    inisialisasiEditor(&editor);
+
+    // Jalankan Alur UI Menu Awal
+    menuAwal(&editor);
+
+    // Jalankan Editor Ketik
     jalankanEditor(&editor);
-    system("cls"); 
+
+    // Alur SAVE Data
+    system("cls");
     printf("=== KELUAR DARI EDITOR ===\n");
-    printf("Masukkan nama file untuk menyimpan (contoh: tugasku.txt): ");
-    scanf("%99s", editor.nama_file); 
-    int status = simpanFile(&editor, editor.nama_file);
-    if (status == 1) {
-        printf("\n[SUCCESS] File '%s' berhasil disimpan!\n", editor.nama_file);
+    printf("Masukkan nama file untuk menyimpan hasil akhir: ");
+    scanf("%99s", editor.nama_file);
+
+    // Memanggil fungsi simpanFile
+    int status_simpan = simpanFile(&editor, editor.nama_file);
+    if (status_simpan == 1) {
+        printf("\nFile '%s' Berhasil disimpan\n", editor.nama_file);
     } else {
-        printf("\n[ERROR] Gagal menyimpan file!\n");
+        printf("\nGagal menyimpan file\n");
     }
-    
+
     return 0;
 }
