@@ -5,6 +5,7 @@
 #include <stdlib.h>
 #include <string.h>
 
+#define MAX_HISTORY 50
 #define MAX_BARIS 1000
 #define MAX_KOLOM 120
 
@@ -27,6 +28,10 @@ typedef struct {
 // Deklarasi fungsi ngetik
 void inisialisasiEditor(TextEditor *ed);
 void jalankanEditor(TextEditor *ed);
-// Logika untuk menambahkan baris baru 
 void tambahBarisBaru(TextEditor *ed);
+void tanganiRipple(TextEditor *ed, int posisi_y_layar);
+void tanganiRippleMundur(TextEditor *ed, int posisi_y_layar);
+void tanganiBackspaceKiri(TextEditor *ed, int *posisi_y_layar);
+void splitBaris(TextEditor *ed, int *posisi_y_layar); 
+
 #endif
